@@ -15,6 +15,11 @@ const app = express();
 
 app.use(express.json()); // Middleware for parsing JSON bodies
 
+// Root route to confirm the server is running
+app.get('/', (req, res) => {
+  res.send('Noteprix Server is up and running!');
+});
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
