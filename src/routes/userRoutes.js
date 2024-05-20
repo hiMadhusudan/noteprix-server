@@ -1,13 +1,27 @@
-// src/routes/userRoutes.js
-
 const express = require('express');
-const { register, login, updateUserProfile, deleteUserProfile } = require('../controllers/userController');
-const { protect } = require('../middleware/authMiddleware');
+const {
+    register,
+    login,
+    getUserProfile,
+    updateUserProfile,
+    deleteUserProfile
+} = require('../controllers/userController');
+
 const router = express.Router();
 
+// Route for user registration
 router.post('/register', register);
+
+// Route for user login
 router.post('/login', login);
-router.put('/profile', protect, updateUserProfile); // Protect the route
-router.delete('/profile', protect, deleteUserProfile); // Protect the route
+
+// Route to get user profile
+router.get('/:userId', getUserProfile);  
+
+// Route to update user profile
+router.put('/:userId', updateUserProfile);
+
+// Route to delete user profile
+router.delete('/:userId', deleteUserProfile);
 
 module.exports = router;

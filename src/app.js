@@ -7,12 +7,14 @@ const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const fileRoutes = require('./routes/fileRoutes');
 const connectDB = require('./config/db');
+const cors = require('cors');
 
 dotenv.config();
 connectDB();
 
 const app = express();
 
+app.use(cors());
 app.use(express.json()); // Middleware for parsing JSON bodies
 
 // Root route to confirm the server is running

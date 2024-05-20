@@ -1,15 +1,13 @@
-// src/models/fileModel.js
-
 const mongoose = require('mongoose');
 
 const fileSchema = new mongoose.Schema({
-  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  fileName: { type: String, required: true },
   filePath: { type: String, required: true },
-  fileSize: { type: Number, required: true } // Size in bytes
+  expiresAt: { type: Date, required: true },
 }, {
   timestamps: true
 });
+
+// Index to delete the file entry after the expiry time
+fileSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('File', fileSchema);

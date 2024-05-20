@@ -63,22 +63,25 @@ exports.login = async (req, res) => {
 
 // Update user profile
 exports.updateUserProfile = async (req, res) => {
+    const { username, email, password } = req.body;
+
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.params.userId);
 
         if (user) {
-            user.username = req.body.username || user.username;
-            user.email = req.body.email || user.email;
-            if (req.body.password) {
-                user.password = bcrypt.hashSync(req.body.password, 10);
+            user.username = username || user.username;
+            user.email = email || user.email;
+            if (password) {
+                user.password = await bcrypt.hash(password, 10); // Ensure password is hashed
             }
 
             const updatedUser = await user.save();
+
             res.json({
                 _id: updatedUser._id,
                 username: updatedUser.username,
-                email: updatedUser.email,
-                token: generateToken(updatedUser._id),
+                email: updatedUser.email
+                // Consider including other fields as needed
             });
         } else {
             res.status(404).json({ message: 'User not found' });
@@ -91,15 +94,35 @@ exports.updateUserProfile = async (req, res) => {
 // Delete user profile
 exports.deleteUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.params.userId);
 
-        if (user) {
-            await user.remove();
-            res.json({ message: 'User removed' });
-        } else {
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        await user.remove();
+        res.status(200).json({ message: 'User successfully deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting user' });
+    }
+};
+
+// Get user profile
+exports.getUserProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
             res.status(404).json({ message: 'User not found' });
+        } else {
+            res.json({
+                _id: user._id,
+                username: user.username,
+                email: user.email
+                // Do not send password and other sensitive data
+            });
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Error fetching user' });
     }
 };
